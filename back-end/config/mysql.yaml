@@ -1,0 +1,4 @@
+user: root
+password: pigeon
+host: mysql
+database: pigeon

@@ -1,0 +1,19 @@
+package constant
+
+const (
+	SYSTEM_GROUP_UUID = "00000000-0000-0000-0000-00000001"
+	DEFAULT_MSG_LIMIT = 100
+)
+
+// sizes
+const (
+	SMALL_BUFFER_SIZE = 1024
+	MID_BUFFER_SIZE   = SMALL_BUFFER_SIZE << 2
+	LARGE_BUFFER_SIZE = MID_BUFFER_SIZE << 4
+)
+
+// types
+const (
+	MESSAGE_TYPE = "message"
+	STATUS_TYPE  = "status"
+)

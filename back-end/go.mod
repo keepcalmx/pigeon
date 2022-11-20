@@ -14,8 +14,11 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
+require github.com/gomodule/redigo v1.8.3 // indirect
+
 require (
 	ariga.io/atlas v0.7.2-0.20220927111110-867ee0cca56a // indirect
+	github.com/RediSearch/redisearch-go v1.1.1
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

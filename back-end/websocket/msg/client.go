@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	const_ "github.com/keepcalmx/go-pigeon/common/constant"
+	C "github.com/keepcalmx/go-pigeon/common/constant"
 	"github.com/keepcalmx/go-pigeon/common/utils"
 	"github.com/keepcalmx/go-pigeon/model/ws"
 )
@@ -138,7 +138,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 		hub:    GetHub(),
 		uuid:   claims.UUID,
 		conn:   conn,
-		buffer: make(chan *ws.Response, const_.SMALL_BUFFER_SIZE),
+		buffer: make(chan *ws.Response, C.SMALL_BUFFER_SIZE),
 	}
 
 	go client.read()

@@ -6,7 +6,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	apiV1 "github.com/keepcalmx/go-pigeon/api/v1"
-	"github.com/keepcalmx/go-pigeon/db"
+	"github.com/keepcalmx/go-pigeon/cache"
+	"github.com/keepcalmx/go-pigeon/storage"
 	"github.com/keepcalmx/go-pigeon/websocket/msg"
 
 	"github.com/gin-gonic/gin"
@@ -23,8 +24,9 @@ func init() {
 }
 
 func main() {
-	// db migrate
-	go db.Migrate()
+	storage.Migrate()
+	cache.CacheGroupMsg()
+	cache.CachePrivateMsg()
 
 	// websocket client hub
 	go msg.GetHub().Run()
@@ -35,7 +37,7 @@ func main() {
 		MaxAge:           12 * time.Hour,
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 	}))
 
 	v1 := r.Group("/api/v1")

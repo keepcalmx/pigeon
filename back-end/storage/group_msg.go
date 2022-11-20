@@ -3,13 +3,13 @@ package storage
 import (
 	"context"
 
-	"github.com/keepcalmx/go-pigeon/db"
 	"github.com/keepcalmx/go-pigeon/ent"
 	"github.com/keepcalmx/go-pigeon/ent/groupmsg"
+	"github.com/keepcalmx/go-pigeon/storage/driver"
 )
 
 func CreateGroupMsg(msg *ent.GroupMsg) (*ent.GroupMsg, error) {
-	client := db.MySQL()
+	client := driver.MySQL()
 	defer client.Close()
 
 	groupMsg, err := client.GroupMsg.Create().
@@ -23,7 +23,7 @@ func CreateGroupMsg(msg *ent.GroupMsg) (*ent.GroupMsg, error) {
 }
 
 func CreateBulkGroupMsg(msgs []*ent.GroupMsg) ([]*ent.GroupMsg, error) {
-	client := db.MySQL()
+	client := driver.MySQL()
 	defer client.Close()
 
 	bulk := make([]*ent.GroupMsgCreate, len(msgs))
@@ -39,12 +39,13 @@ func CreateBulkGroupMsg(msgs []*ent.GroupMsg) ([]*ent.GroupMsg, error) {
 	return groupMsgs, err
 }
 
-func GetGroupMsgs(uuid string) ([]*ent.GroupMsg, error) {
-	client := db.MySQL()
+func GetGroupMsgs(uuid string, offset, limit int) ([]*ent.GroupMsg, error) {
+	client := driver.MySQL()
 	defer client.Close()
 
 	groupMsgs, err := client.GroupMsg.Query().
 		Where(groupmsg.ToEQ(uuid)).
+		Offset(offset).Limit(limit).
 		All(context.Background())
 	return groupMsgs, err
 }

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	const_ "github.com/keepcalmx/go-pigeon/common/constant"
+	C "github.com/keepcalmx/go-pigeon/common/constant"
 	"github.com/keepcalmx/go-pigeon/ent"
 	"github.com/keepcalmx/go-pigeon/model/rest"
 	"github.com/keepcalmx/go-pigeon/storage"
@@ -17,7 +17,7 @@ const (
 	GROUP = "group"
 )
 
-func CreateUser() gin.HandlerFunc {
+func Register() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var userForm rest.CreateUserForm
 		err := c.BindJSON(&userForm)
@@ -61,7 +61,7 @@ func CreateUser() gin.HandlerFunc {
 			return
 		}
 
-		storage.AddGroupUser(const_.SYSTEM_GROUP_UUID, []string{user.UUID})
+		storage.AddGroupUser(C.SYSTEM_GROUP_UUID, []string{user.UUID})
 
 		c.IndentedJSON(http.StatusOK, gin.H{
 			"code": 200,
@@ -161,7 +161,7 @@ func GetUserContactInfos() gin.HandlerFunc {
 		}
 
 		for _, group := range allGroups {
-			msgs, _ := storage.GetGroupMsgs(group.UUID)
+			msgs, _ := storage.GetGroupMsgs(group.UUID, 0, C.DEFAULT_MSG_LIMIT)
 			data = append(data, rest.ContactInfo{
 				UUID:        group.UUID,
 				Type:        GROUP,

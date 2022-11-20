@@ -11,20 +11,23 @@ const http = axios.create({
 })
 
 // 请求拦截器
-// http.interceptors.request.use(
-//   (config: AxiosRequestConfig) => {
-//     const token = localStorage.getItem('token') || ''
-//     return {
-//       ...config,
-//       headers: {
-//         'x-access-token': token
-//       }
-//     }
-//   },
-//   (error: AxiosError) => {
-//     Promise.reject(error)
-//   }
-// )
+http.interceptors.request.use(
+  (config: AxiosRequestConfig) => {
+    if (config.url == '/ping' || config.url == '/register' || config.url == '/login') {
+      return config
+    }
+    const token = localStorage.getItem('token') || ''
+    return {
+      ...config,
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  },
+  (error: AxiosError) => {
+    Promise.reject(error)
+  }
+)
 
 // 响应拦截器
 // http.interceptors.response.use(

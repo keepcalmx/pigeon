@@ -6,22 +6,22 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/keepcalmx/go-pigeon/common/data"
-	"github.com/keepcalmx/go-pigeon/db"
+	"github.com/keepcalmx/go-pigeon/common/utils"
 	"github.com/keepcalmx/go-pigeon/ent"
 	"github.com/keepcalmx/go-pigeon/ent/user"
 	"github.com/keepcalmx/go-pigeon/model/rest"
+	"github.com/keepcalmx/go-pigeon/storage/driver"
 )
 
 func CreateUser(userForm rest.CreateUserForm) (*ent.User, error) {
-	client := db.MySQL()
+	client := driver.MySQL()
 	defer client.Close()
 
 	rand.Seed(time.Now().UnixNano())
 	randomAvatar := data.UserAvatars[rand.Intn(len(data.UserAvatars))]
 	user, err := client.User.Create().
-		SetUUID(uuid.New().String()).
+		SetUUID(utils.UUIDNoHyphen()).
 		SetUsername(userForm.Username).
 		SetPassword(userForm.Password).
 		SetEmail(userForm.Email).
@@ -34,7 +34,7 @@ func CreateUser(userForm rest.CreateUserForm) (*ent.User, error) {
 }
 
 func GetUserGroups(userID string) ([]*ent.Group, error) {
-	client := db.MySQL()
+	client := driver.MySQL()
 	defer client.Close()
 
 	user_, err := client.User.Query().
@@ -49,7 +49,7 @@ func GetUserGroups(userID string) ([]*ent.Group, error) {
 }
 
 func GetUserByUUID(userID string) (*ent.User, error) {
-	client := db.MySQL()
+	client := driver.MySQL()
 	defer client.Close()
 
 	user_, err := client.User.Query().
@@ -59,7 +59,7 @@ func GetUserByUUID(userID string) (*ent.User, error) {
 }
 
 func GetUserByUsername(username string) (*ent.User, error) {
-	client := db.MySQL()
+	client := driver.MySQL()
 	defer client.Close()
 
 	user_, err := client.User.Query().
@@ -69,7 +69,7 @@ func GetUserByUsername(username string) (*ent.User, error) {
 }
 
 func GetAllUsers() ([]*ent.User, error) {
-	client := db.MySQL()
+	client := driver.MySQL()
 	defer client.Close()
 
 	allUsers, err := client.User.Query().All(context.Background())

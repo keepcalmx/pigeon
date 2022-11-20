@@ -4,20 +4,20 @@ import (
 	"context"
 	"time"
 
-	"github.com/google/uuid"
-	"github.com/keepcalmx/go-pigeon/db"
+	"github.com/keepcalmx/go-pigeon/common/utils"
 	"github.com/keepcalmx/go-pigeon/ent"
 	"github.com/keepcalmx/go-pigeon/ent/group"
 	"github.com/keepcalmx/go-pigeon/ent/user"
+	"github.com/keepcalmx/go-pigeon/storage/driver"
 )
 
 func CreateGroup(name, avatar string) (*ent.Group, error) {
-	client := db.MySQL()
+	client := driver.MySQL()
 	defer client.Close()
 	ctx := context.Background()
 
 	group, err := client.Group.Create().
-		SetUUID(uuid.New().String()).
+		SetUUID(utils.UUIDNoHyphen()).
 		SetName(name).
 		SetAvatar(avatar).
 		SetCreatedAt(time.Now()).
@@ -27,7 +27,7 @@ func CreateGroup(name, avatar string) (*ent.Group, error) {
 }
 
 func AddGroupUser(uuid string, userIDList []string) (*ent.Group, error) {
-	client := db.MySQL()
+	client := driver.MySQL()
 	defer client.Close()
 	ctx := context.Background()
 
@@ -52,7 +52,7 @@ func AddGroupUser(uuid string, userIDList []string) (*ent.Group, error) {
 }
 
 func ListGroupUsers(uuid string) ([]*ent.User, error) {
-	client := db.MySQL()
+	client := driver.MySQL()
 	defer client.Close()
 	ctx := context.Background()
 
@@ -63,8 +63,8 @@ func ListGroupUsers(uuid string) ([]*ent.User, error) {
 	return groupUsers, err
 }
 
-func ListAllGroups() ([]*ent.Group, error) {
-	client := db.MySQL()
+func ListGroups() ([]*ent.Group, error) {
+	client := driver.MySQL()
 	defer client.Close()
 	ctx := context.Background()
 

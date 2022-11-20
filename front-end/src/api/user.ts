@@ -6,7 +6,7 @@ async function getUserInfo(uuid: string) {
 }
 
 async function createUser(data: any) {
-  return await http.post<ResponseData>('/users', data)
+  return await http.post<ResponseData>('/register', data)
 }
 
 async function getUserContactList(uuid: string) {

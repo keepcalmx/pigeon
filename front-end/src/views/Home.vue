@@ -103,6 +103,10 @@ async function registerMsgWebSocket() {
     console.log('websocket register success.', event)
   })
 
+  msgWebSocket.value.addEventListener('close', (event: any) => {
+    console.log('websocket closed.', event)
+  })
+
   msgWebSocket.value.addEventListener('error', (event: any) => {
     console.log('websocket register error: ', event)
   })
@@ -317,7 +321,7 @@ onUnmounted(() => {
           v-for="([key, obj], idx) in recentContactInfo"
           :key="idx"
           @click="changeActivedChatStatus(obj.uuid)"
-          :class="[{ online: obj.online }, { active: obj.uuid === activedChatUUID }, 'msg']"
+          :class="[{ online: obj.online, offline: !obj.online, active: obj.uuid === activedChatUUID }, 'msg']"
         >
           <img class="msg-profile" :src="obj.avatar" />
           <div class="msg-detail">

@@ -5,7 +5,8 @@ import (
 	"sync"
 	"time"
 
-	const_ "github.com/keepcalmx/go-pigeon/common/constant"
+	"github.com/keepcalmx/go-pigeon/cache"
+	C "github.com/keepcalmx/go-pigeon/common/constant"
 	"github.com/keepcalmx/go-pigeon/ent"
 	"github.com/keepcalmx/go-pigeon/model/ws"
 	"github.com/keepcalmx/go-pigeon/storage"
@@ -42,11 +43,11 @@ func GetHub() *Hub {
 	once.Do(func() {
 		hub = &Hub{
 			clients:    &sync.Map{},
-			broadcast:  make(chan *ws.Msg, const_.LARGE_BUFFER_SIZE),
-			unicast:    make(chan *ws.Msg, const_.MID_BUFFER_SIZE),
-			status:     make(chan *ws.Status, const_.MID_BUFFER_SIZE),
-			register:   make(chan *Client, const_.MID_BUFFER_SIZE),
-			unregister: make(chan *Client, const_.MID_BUFFER_SIZE),
+			broadcast:  make(chan *ws.Msg, C.LARGE_BUFFER_SIZE),
+			unicast:    make(chan *ws.Msg, C.MID_BUFFER_SIZE),
+			status:     make(chan *ws.Status, C.MID_BUFFER_SIZE),
+			register:   make(chan *Client, C.MID_BUFFER_SIZE),
+			unregister: make(chan *Client, C.MID_BUFFER_SIZE),
 		}
 		log.Println("hub is initialized...")
 	})
@@ -56,18 +57,20 @@ func GetHub() *Hub {
 func (h *Hub) Run() {
 	log.Println("hub is now running...")
 	// use buffered channels to write private and group messages
-	groupMsgBuffer := make(chan *ent.GroupMsg, const_.LARGE_BUFFER_SIZE)
-	privateMsgBuffer := make(chan *ent.PrivateMsg, const_.MID_BUFFER_SIZE)
+	groupMsgBuffer := make(chan *ent.GroupMsg, C.LARGE_BUFFER_SIZE)
+	privateMsgBuffer := make(chan *ent.PrivateMsg, C.MID_BUFFER_SIZE)
 	go func() {
 		for {
 			select {
 			case msg := <-groupMsgBuffer:
-				_, err := storage.CreateGroupMsg(msg)
+				msg_, err := storage.CreateGroupMsg(msg)
+				cache.AddGroupMsg(msg_)
 				if err != nil {
 					log.Println("create group message with error ", err)
 				}
 			case msg := <-privateMsgBuffer:
-				_, err := storage.CreatePrivateMsg(msg)
+				msg_, err := storage.CreatePrivateMsg(msg)
+				cache.AddPrivateMsg(msg_)
 				if err != nil {
 					log.Println("create private message with error ", err)
 				}
@@ -100,7 +103,7 @@ func (h *Hub) Run() {
 					return true
 				}
 				value.(*Client).buffer <- &ws.Response{
-					Type: const_.STATUS_TYPE,
+					Type: C.STATUS_TYPE,
 					Data: status,
 				}
 				return true
@@ -121,7 +124,7 @@ func (h *Hub) Run() {
 				continue
 			}
 			response := &ws.Response{
-				Type: const_.MESSAGE_TYPE,
+				Type: C.MESSAGE_TYPE,
 				Data: msg,
 			}
 			select {
@@ -149,7 +152,7 @@ func (h *Hub) Run() {
 					continue
 				}
 				response := &ws.Response{
-					Type: const_.MESSAGE_TYPE,
+					Type: C.MESSAGE_TYPE,
 					Data: msg,
 				}
 				select {
